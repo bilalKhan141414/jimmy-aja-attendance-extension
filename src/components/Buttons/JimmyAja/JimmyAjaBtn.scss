@@ -1,0 +1,18 @@
+.extensionInOutControl{
+    border: 1px solid #dcdcdc;
+    font-size: 20px;
+    width: 100px;
+    height: 100px;
+    margin: 0 20px;
+    border-radius: 10px;
+
+    &.extensionActive {
+        background: #efefef;
+        cursor: default !important;
+    }
+
+    &:hover {
+        background: #efefef;
+        cursor:pointer;
+    }
+}

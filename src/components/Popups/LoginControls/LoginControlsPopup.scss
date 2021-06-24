@@ -1,0 +1,51 @@
+
+.loginControlsPopup {
+    width:0 !important;
+    display: flex !important;
+    min-width: 82px !important;
+    position: fixed !important;
+    top:5px !important;
+    left:5px !important;
+    background-color: #fff !important;
+    border: 1px solid #0003 !important;
+    box-shadow: 0px 0px 2px 1px #0000003d !important;
+    border-radius:5px !important;
+    padding: 5px 9px !important; 
+    z-index: 999999999999 !important;
+    background: #efefef !important;
+    overflow: hidden !important;
+    transition: all 0.5s ease !important;
+    
+    &.close{
+        min-width: 0 !important;
+    }
+    .loginControls {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 3px 14px !important;
+        margin-right: 18px !important;
+    }
+
+    .visibilityButton {
+        display: flex !important;
+        position: absolute !important;
+        right: 0 !important;
+        height: 100% !important;
+        top: 0 !important;
+        background: #ffffff !important;
+        padding: 0 2px !important;
+
+        .visibilityBtnArrow{
+            width: 14px !important;
+            cursor:pointer !important;
+        }
+        .rightArrowCloseBtn{
+
+        }
+        .leftArrowCloseBtn{
+            
+        }
+    
+    }
+}

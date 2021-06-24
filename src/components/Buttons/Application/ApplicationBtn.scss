@@ -1,0 +1,14 @@
+.applicationButton{
+    border: 1px solid #0003;
+    display: inline-block;
+    overflow: hidden;
+    border-radius: 5px;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    background: #fff;
+    img {
+        width: 35px;
+        height: 35px;
+    }
+}

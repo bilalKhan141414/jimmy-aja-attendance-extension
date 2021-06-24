@@ -3,12 +3,18 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import ConfigurationContextProvider from './context/ConfigurationContext';
+
+
+
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ConfigurationContextProvider>
+       <App />
+    </ConfigurationContextProvider>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById('ext-root')
 );
 
 // If you want to start measuring performance in your app, pass a function
