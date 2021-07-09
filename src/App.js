@@ -22,7 +22,6 @@ function App() {
             <OperationsPopup 
               header={"Jimmy Aja"}
               isModalOpen = {jimmyAja.isModalOpen}
-              is
               closeModal={handleApplicationBtnClick}
               body={
               <JimmyAjaContainer 

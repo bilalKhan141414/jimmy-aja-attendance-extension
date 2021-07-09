@@ -1,24 +1,32 @@
 import moment from 'moment';
 import $ from 'jquery';
+import constants from '../constants';
 export default {
     setDataInStore : null,
-    markAttendanceOnJimmyAja: function(type, setDataInStore) {
+    markAttendanceOnJimmyAja: function(type,setDataInStore,  isUrlSaved = false) {
         console.log("checking browser url", window.location.href.includes("https://jimmyaja.com"))
         
         if(!window.location.href.includes("https://jimmyaja.com")){
             console.log("redirecting to jimmy aja")
-            var newWin =window.open("https://jimmyaja.com/home", "_blank");           
+            var newWin = window.open("https://jimmyaja.com/home", "_blank");           
 
-            if(!newWin || newWin.closed || typeof newWin.closed=='undefined') 
+            if(!newWin || newWin.closed || typeof newWin.closed == 'undefined') 
             { 
                 //POPUP BLOCKED
-                window.location.href = "https://jimmyaja.com/home";
+                console.log("POPUP BLOCKED::isUrlSaved",isUrlSaved)
+                if(!isUrlSaved){
+                    window.postMessage({type:constants.SAVE_CURRENT_URL, payload:{ url: window.location.href, type}}, "*")
+                }
+                else{
+                    window.location.href = "https://jimmyaja.com/home";
+                }
             }
             return;
         }
         
         console.log("not in jimmy ja")
         this.setDataInStore = setDataInStore;
+
         if(window.location.href.includes("https://jimmyaja.com")){
             console.log("not in jimmy ja")
             let loginButton = $(".login-btn");
@@ -53,9 +61,10 @@ export default {
         console.log("marking Attandance")
         $(".page-sidebar-menu li.nav-item a[href='#attendance'] span").click();
         $("#form_attendance #comments").val("In At : "+ moment().format("DD-MM-YYYY hh:mm a"));
-        // $("#form_attendance #inBtn").click();
+        $("#form_attendance #inBtn").click();
         // $("#form_attendance #submit-btn").click();
-        // this.checkAttendesMarkedSuccessfully();  
+        // this.checkAttendesMarkedSuccessfully(); 
+                this.setDataInStore(); 
     },
     markOutAttendance: function(){
         console.log("marking Attandance")
@@ -64,10 +73,11 @@ export default {
         $("#form_attendance #outBtn").click();
         // $("#form_attendance #submit-btn").click();
         // this.checkAttendesMarkedSuccessfully();  
+                this.setDataInStore();
     },
-    isThisValidHour: function(){
+    isThisInValidHour: function(){
         console.log("current houre",this.getCurrentHour() );
-        return (this.getCurrentHour() < 9 || this.getCurrentHour() >= 23);
+        return (this.getCurrentHour() < 9 || this.getCurrentHour() >= 23); //current houre is less than 9 and greator than or equals to 11 pm
     },
     getCurrentHour: function(){
         return moment().format("H");
@@ -78,14 +88,12 @@ export default {
     checkAttendesMarkedSuccessfully: function(){
         const intervalId = setInterval(() => {
             if(!$("#attendance").hasClass("in")){ //is check in model open
-                this.setDataInStore({
-                    jimmyAja:{
-                        isCheckedIn:true,
-                        inDate: this.getTodayDate()
-                    }
-                })  
+                this.setDataInStore();
                 clearInterval(intervalId);
             }
         }, 1000);
+    },
+    checkAttandanceSuccessfully : function () {
+        return $(".moving-outlist marquee p").text().includes("Muhammad Bilal")
     }
 }//end object
