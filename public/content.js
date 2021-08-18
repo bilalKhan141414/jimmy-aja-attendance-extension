@@ -2,8 +2,7 @@ const storage = chrome.storage.local;
 const communicator = chrome.runtime;
 function bootstrap () {
     const extensionOrigin = `chrome-extension://${chrome.runtime.id}`;
-    console.log("parent::",window, window.frameElement);
-    
+
     if(!location.ancestorOrigins.contains(extensionOrigin)){
         fetch(chrome.runtime.getURL("index.html"))
         .then(response => response.text())
@@ -53,18 +52,51 @@ window.addEventListener("message", function (e) {
                 BackgroundManager.CheckForValidHour();
             }
             break;
+            case "AUTO_CHECKOUT_USER_CHOICE":
+            {
+                //Step 6 step 5 is on line #162 next step is line #343 in background script
+                chrome.runtime.sendMessage({ type: "AUTO_CHECKOUT_USER_CHOICE",  payload:{ ...e.data.payload }}, BackgroundManager.HandleMarkAttendanceRepsone)
+            }
+            break;
+            case "CONFIG.GET":
+            {
+                console.log("Config.get")
+                chrome.runtime.sendMessage({ 
+                    type: "CONFIG.GET",  
+                    payload:{ ...e.data.payload }
+                }, BackgroundManager.HandleConfigResponse)
+            }
             default:
                 break;
         }
     }
 })
 
+//OnTabFirstLoad
 chrome.runtime.sendMessage({ type: "GET_TAB_ID" }, response => {
     console.log('My tabId is', response);
     localStorage.setItem("tabId", response.payload.tabId);
 });
 //reading message from background or popup script
 chrome.runtime.onMessage.addListener(function (response, sender, senderRequest){
+    
+    console.log("message::----------------", response);
+    switch (response.type) {
+        case "AUTO_JIMMYAJA_CHECKOUT_ORDER":{
+                
+            // AutoCheckout Step 3 and Step 2 at line # 180 in background script next step in ConfigurationContext #113
+            window.postMessage({
+                type:"AUTO_JIMMYAJA_CHECKOUT_ORDER",
+                payload:{
+                    ...response.payload
+                }
+            }, "*");
+        }
+        break;
+    
+        default:
+            break;
+    }
     if(response.type && response.type === "ACTIVE_TAB_ID"){
         console.log("Intervals::MessageFromTab onMessageFromBackgroundScript" )
         storage.get(["activeTabId"], function (result){
@@ -90,6 +122,10 @@ const BackgroundManager = {
     checkOutTimeInterval:null,
     HandleMarkAttendanceRepsone: function(response) {
         window.postMessage({ type: "TODAYS_ATTENDANCE_DONE", payload:{...response.payload}}, "*");
+    },
+    HandleConfigResponse:function(response){
+        console.log("response::", response)
+        window.postMessage({ type: "CONFIG.GET.SERVER", payload:{...response.payload}}, "*");
     },
     CheckAlreadyIn : function(response) {
         console.log("content::checkAlreadyIn::", response, response.payload.isCheckedIn);

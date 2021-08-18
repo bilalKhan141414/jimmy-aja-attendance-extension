@@ -1,5 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
-
+@font-face {
+    font-family: 'SnellBT';
+    src: url("./assets/fonts/snell-roundhand/SnellBT-Regular.otf") format('opentype');
+}
+.snellFontFaimly{
+    font-family: 'SnellBT', cursive, sans-serif;
+}
 .themeFontFamily{
     font-family: PoppinsNormal, sans-serif;
 }
@@ -66,7 +72,15 @@
 .shadow{
     box-shadow: 0px 0px 2px 1px #0000003d;
 }
-
+#ext-root{
+    
+    // min-width: 300px;
+    // min-height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    // height: 100vh;
+}
 
 /*Jimmy Aja poup*/
 

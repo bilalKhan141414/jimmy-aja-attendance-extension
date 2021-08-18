@@ -13,6 +13,10 @@ function ConfigurationContextProvider({children}) {
             isModalOpen:false,
             isCheckedIn:false,
             isCheckedOut:false,
+            autoCheckOut:{
+                checkOut:false,
+                payload:{}
+            }
         }
     })
     useEffect(() => {
@@ -31,6 +35,21 @@ function ConfigurationContextProvider({children}) {
                     case constants.ON_TAB_FOCUS:{
                         // jimmyaja.isThisInValidHour() && localStorage.getItem("wasWaitingForValidItem") && checkForValidHour();
                         console.log("wasWaitingForValidItem::",jimmyaja.isThisInValidHour() && localStorage.getItem("wasWaitingForValidItem"));
+                        
+                        const payload = {...e.data.payload};
+                        if(payload.process.autoCheckOut){
+                            delete payload.process;
+                            setState(prevState => ({
+                                ...prevState,
+                                jimmyAja:{
+                                    ...prevState.jimmyAja,
+                                    autoCheckOut:{
+                                        checkOut:true,
+                                        ...payload
+                                    }
+                                }
+                            }));
+                        }
                     }
                         break;
                     case constants.WELCOME_MESSAGE_RESPONSE:
@@ -89,6 +108,23 @@ function ConfigurationContextProvider({children}) {
                             jimmyaja.markAttendanceOnJimmyAja(e.data.payload.type, outRequestCallback ,true);
                         }
                     break;
+                    case constants.AUTO_JIMMYAJA_CHECKOUT_ORDER:
+                    {
+                        //Autocheckout step 4 step 3 at line #74 next step #161
+                        const payload = {...e.data.payload};
+                           
+                        setState(prevState => ({
+                            ...prevState,
+                            jimmyAja:{
+                                ...prevState.jimmyAja,
+                                autoCheckOut:{
+                                    checkOut:true,
+                                    ...payload
+                                }
+                            }
+                        }));
+                    }
+                    break;
                     default:
                         break;
                 }
@@ -111,21 +147,6 @@ function ConfigurationContextProvider({children}) {
     const removeValidHourWaitingFromLocalStorage = () => {
         localStorage.getItem("wasWaitingForValidItem") && localStorage.removeItem("wasWaitingForValidItem");
     }
-    const checkForValidHour = () => {
-        validHourInterval = setInterval(()=>{
-            // chrome.storage.local.get(["activeTabId"], function(result){
-                console.log("waiting for valid hour")
-                // if(+result.activeTabId != +localStorage.getItem("tabId")){
-                //     clearInterval(validHourInterval);
-                // }
-                if( jimmyaja.isThisInValidHour() ) return;
-                console.log("valid hour")
-                removeValidHourWaitingFromLocalStorage();
-                jimmyaja.markAttendanceOnJimmyAja(constants.IN, inRequestCallback);
-                clearInterval(validHourInterval);
-            // });
-        }, 60000)
-    }
     const handleApplicationBtnClick = (e, appBtnType) =>{
         e.preventDefault();
         e.stopPropagation();
@@ -135,13 +156,23 @@ function ConfigurationContextProvider({children}) {
         console.log("applicationEvent::", e, e.source);
         switch (appBtnType) {
             case constants.APP_BTN_TYPES.JIMMY:
+
+                //To Do : user denies the request to mark checkout at jimmy aja (Request content script to save user choice)
+                // step 5 step 4 is on line #113 next step is on line #57 in Contenct script
+                window.postMessage({type:constants.AUTO_CHECKOUT_USER_CHOICE, payload:{
+                    userChoice: constants.ENUMS.USER_CHOICE.AUTO_CHECKOUT.DENIED
+                }}, "*")
                 setState((prevState)=>({
                     ...prevState,
                     jimmyAja:{
                         ...prevState.jimmyAja,
-                        isModalOpen:!prevState.jimmyAja.isModalOpen
+                        isModalOpen:!prevState.jimmyAja.isModalOpen,
+                        autoCheckOut:{
+                            checkOut:false,
+                            payload:{}
+                        }
                     }
-                }))
+                }));
                 break;
         
             default:
@@ -153,7 +184,7 @@ function ConfigurationContextProvider({children}) {
         {
             window.postMessage({type: constants.MARKING_CHECK_OUT_IN_PROGRESS}, "*")
         }
-        // jimmyaja.markAttendanceOnJimmyAja(type, outRequestCallback);
+        jimmyaja.markAttendanceOnJimmyAja(type, outRequestCallback);
     }
     const inRequestCallback = () => {
         console.log("requesting for atttendance marked sucess full")
@@ -161,7 +192,7 @@ function ConfigurationContextProvider({children}) {
     }
     const outRequestCallback = () => {
         window.postMessage({type: constants.MARKED_CHECK_OUT }, "*")
-    }
+      }
     return (
         <ConfigurationContext.Provider
             value={{...state, handleApplicationBtnClick, handleInOutClick}}

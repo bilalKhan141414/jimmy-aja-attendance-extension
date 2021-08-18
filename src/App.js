@@ -5,13 +5,20 @@ import {ConfigurationContext} from './context/ConfigurationContext'
 import LoginControlsPopup from './components/Popups/LoginControls/LoginControlsPopup';
 import OperationsPopup from './components/Popups/Operations/OperationsPopup';
 import JimmyAjaContainer from './components/JimmyAja/JimmyAjaContainer';
+import JimmyAjaLogin from './pages/JimmAja/Login/JimmyAjaLogin';
 
 
 function App() {
   return (
     <ConfigurationContext.Consumer>
       {
-        ({baseUrl, jimmyAja, handleApplicationBtnClick, handleInOutClick}) => 
+        ({
+          baseUrl, 
+          jimmyAja, 
+          orderForCheckOut,
+          handleApplicationBtnClick, 
+          handleInOutClick,
+        }) => 
         {
           console.log("state::",baseUrl, jimmyAja)
           return (
@@ -21,17 +28,18 @@ function App() {
             />
             <OperationsPopup 
               header={"Jimmy Aja"}
-              isModalOpen = {jimmyAja.isModalOpen}
+              isModalOpen = {jimmyAja.isModalOpen || jimmyAja.autoCheckOut.checkOut}
               closeModal={handleApplicationBtnClick}
               body={
               <JimmyAjaContainer 
                 isCheckedIn={jimmyAja.isCheckedIn}
                 isCheckedOut={jimmyAja.isCheckedOut}
                 handleInOutClick={handleInOutClick}
-
+                autoCheckOut={jimmyAja.autoCheckOut}
               />}
               footer={null}
             />
+            <JimmyAjaLogin />
             </>
           )
         }

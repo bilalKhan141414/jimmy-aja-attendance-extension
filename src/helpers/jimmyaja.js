@@ -59,21 +59,21 @@ export default {
     },
     markInAttendance: function(){
         console.log("marking Attandance")
-        $(".page-sidebar-menu li.nav-item a[href='#attendance'] span").click();
+        $(".notification-dropdown li a[href='#attendance'] i").click();
         $("#form_attendance #comments").val("In At : "+ moment().format("DD-MM-YYYY hh:mm a"));
         $("#form_attendance #inBtn").click();
-        // $("#form_attendance #submit-btn").click();
-        // this.checkAttendesMarkedSuccessfully(); 
-                this.setDataInStore(); 
+        $("#form_attendance #submit-btn").click();
+        this.checkAttendesMarkedSuccessfully(); 
+                // this.setDataInStore(); 
     },
     markOutAttendance: function(){
         console.log("marking Attandance")
-        $(".page-sidebar-menu li.nav-item a[href='#attendance'] span").click();
+        $(".notification-dropdown li a[href='#attendance'] i").click();
         $("#form_attendance #comments").val("Out At : "+ moment().format("DD-MM-YYYY hh:mm a"));
         $("#form_attendance #outBtn").click();
-        // $("#form_attendance #submit-btn").click();
-        // this.checkAttendesMarkedSuccessfully();  
-                this.setDataInStore();
+        $("#form_attendance #submit-btn").click();
+        this.checkAttendesMarkedSuccessfully();  
+                // this.setDataInStore();
     },
     isThisInValidHour: function(){
         console.log("current houre",this.getCurrentHour() );
