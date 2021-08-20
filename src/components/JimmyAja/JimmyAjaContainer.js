@@ -2,6 +2,12 @@ import React from 'react'
 import JimmyAjaBtn from '../Buttons/JimmyAja/JimmyAjaBtn'
 
 export default function JimmyAjaContainer({isCheckedIn, isCheckedOut, handleInOutClick, autoCheckOut}) {
+    const handleExtensionButtonClick = (e, type) => {
+        e.stopPropagation();
+        e.preventDefault();
+        handleInOutClick(type)
+        console.log("handleExtensionButtonClick----------------------------------------")
+    }
     return (
         <>
             {
@@ -14,12 +20,12 @@ export default function JimmyAjaContainer({isCheckedIn, isCheckedOut, handleInOu
                 <JimmyAjaBtn 
                     className={`extensionIn ${isCheckedIn && "extensionActive"}`}
                     text={autoCheckOut.inTime ? `IN (${autoCheckOut.inTime})`: "IN"}
-                    onClick={(e) => handleInOutClick("IN")}
+                    onClick={(e) => handleExtensionButtonClick(e, "IN")}
                 />
                 <JimmyAjaBtn 
                     className={`extensionOut ${isCheckedOut && "extensionActive"}`}
                     text="OUT"
-                    onClick={(e) => handleInOutClick("OUT")}
+                    onClick={(e) => handleExtensionButtonClick(e,"OUT")}
                 />
             </div>
         </>

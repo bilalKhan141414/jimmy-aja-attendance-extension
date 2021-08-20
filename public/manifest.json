@@ -1,25 +1,17 @@
 {
   "manifest_version":2,
-  "version":"2.0",
-  "short_name": "Jimmy Aja Automation",
-  "name": "Automating daily operations on jimmy aja",
+  "version":"0.0.1",
+  "short_name": "Jimmy's Boy",
+  "name": "Jimmy had a baby | Mini Jimmy Aja (The Assistant)",
+  "description":"There was a boy name Jimmy who don't like to come to office so office made a portal by his name as jimmy aja and this is a baby jimmy aja born at 21 August 2021 12:17",
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
-  "browser_action": {
-    "default_popup": "index.html",
-    "default_icon": {
-      "16": "/images/get_started16.png",
-      "32": "/images/get_started32.png",
-      "48": "/images/get_started48.png",
-      "128": "/images/get_started128.png"
-    }
-  },
   "icons": {
-    "16": "/images/get_started16.png",
-    "32": "/images/get_started32.png",
-    "48": "/images/get_started48.png",
-    "128": "/images/get_started128.png"
+    "16": "/images/jimmy1/jimmy_logo16.png",
+    "32": "/images/jimmy1/jimmy_logo32.png",
+    "48": "/images/jimmy1/jimmy_logo48.png",
+    "128": "/images/jimmy1/jimmy_logo128.png"
   },
   "background":{
     "scripts":[

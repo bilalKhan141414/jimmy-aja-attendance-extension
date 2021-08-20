@@ -1,6 +1,7 @@
 import moment from 'moment';
 import $ from 'jquery';
 import constants from '../constants';
+import LocalStorageHelper from './localStorageHelper';
 export default {
     setDataInStore : null,
     markAttendanceOnJimmyAja: function(type,setDataInStore,  isUrlSaved = false) {
@@ -8,7 +9,7 @@ export default {
         
         if(!window.location.href.includes("https://jimmyaja.com")){
             console.log("redirecting to jimmy aja")
-            var newWin = window.open("https://jimmyaja.com/home", "_blank");           
+            var newWin = window.open("https://jimmyaja.com/home#auto_checkout_process", "_blank");           
 
             if(!newWin || newWin.closed || typeof newWin.closed == 'undefined') 
             { 
@@ -18,7 +19,7 @@ export default {
                     window.postMessage({type:constants.SAVE_CURRENT_URL, payload:{ url: window.location.href, type}}, "*")
                 }
                 else{
-                    window.location.href = "https://jimmyaja.com/home";
+                    // window.location.href = "https://jimmyaja.com/home#auto_checkout_process";
                 }
             }
             return;
@@ -42,9 +43,14 @@ export default {
         }
     },
     doLogin: function(){
-        $(".login-detail #company_code").val("OBOBS");
-        $(".login-detail #email").val("bilal.khan@codeinformatics.com");
-        $(".login-detail input[name='password']").val("6reBR@stlDru");
+        const userCredntials = JSON.parse(localStorage.getItem("userCredentials"));
+        // $(".login-detail #company_code").val("OBOBS");
+        // $(".login-detail #email").val("bilal.khan@codeinformatics.com");
+        // $(".login-detail input[name='password']").val("6reBR@stlDru");
+        // $(".login-detail input[name='remember_me']").click();
+        $(".login-detail #company_code").val(userCredntials.companyCode);
+        $(".login-detail #email").val(userCredntials.email);
+        $(".login-detail input[name='password']").val(userCredntials.password);
         $(".login-detail input[name='remember_me']").click();
         $(".login-btn").click();
     },
@@ -77,7 +83,8 @@ export default {
     },
     isThisInValidHour: function(){
         console.log("current houre",this.getCurrentHour() );
-        return (this.getCurrentHour() < 9 || this.getCurrentHour() >= 23); //current houre is less than 9 and greator than or equals to 11 pm
+        const userCredentials = LocalStorageHelper.userCredentials;
+        return (this.getCurrentHour() <= (userCredentials.isValid ? +userCredentials.startHoure : 9) || this.getCurrentHour() >= 23); //current houre is less than 9 and greator than or equals to 11 pm
     },
     getCurrentHour: function(){
         return moment().format("H");

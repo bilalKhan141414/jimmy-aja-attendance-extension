@@ -13,6 +13,8 @@ export default function LoginControlsPopup({
 }) {
     const [isPopupCollapsed, setIsPopupCollapsed] = useState(false)
     const onClosePopupClick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
         setIsPopupCollapsed(!isPopupCollapsed)
     }
     return (

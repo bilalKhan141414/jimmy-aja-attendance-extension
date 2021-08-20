@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import constants from '../constants';
 import jimmyaja from '../helpers/jimmyaja';
 import $ from 'jquery';
+import moment from 'moment';
 export const ConfigurationContext = React.createContext({});
 let validHourInterval = null
 function ConfigurationContextProvider({children}) {
@@ -26,6 +27,7 @@ function ConfigurationContextProvider({children}) {
         }
     }, [state])
     useEffect(()=>{
+        
         window.postMessage({type:constants.WELCOME_MESSAGE}, "*")
         window.addEventListener("message", function(e){
             if(e.source != window && !e.data.opener) return;
@@ -59,6 +61,7 @@ function ConfigurationContextProvider({children}) {
                                 baseUrl:e.data.payload.baseUrl.substr(0, e.data.payload.baseUrl.lastIndexOf("/"))
                             }));
                         }
+
                         break;
                     case constants.MARK_ATTENDANCE:
                         {
@@ -78,7 +81,6 @@ function ConfigurationContextProvider({children}) {
                             removeValidHourWaitingFromLocalStorage();
                             const payload = {...e.data.payload};
                             delete payload.process;
-                            console.log("popup::TODAYS_ATTENDANCE_DONE",payload)
                             setState(prevState => ({
                                 ...prevState,
                                 jimmyAja:{
@@ -86,13 +88,24 @@ function ConfigurationContextProvider({children}) {
                                     ...payload
                                 }
                             }));
+                            console.log("test::e.data", e.data.payload)
+                            
                             if(window.location.href.includes("https://jimmyaja.com") && !e.data.opener) {
                                 if(!e.data.payload.process.wasNewPage) {
-                                    window.location.href = e.data.payload.url;
+                                    if(e.data.payload.url.includes("https://jimmyaja.com") || !e.data.payload.url){
+                                        window.close();
+                                    }else{
+                                        window.location.href = e.data.payload.url;
+                                    }
                                 }
                                 else {
-                                    window.opener && window.opener.postMessage({ type: constants.TODAYS_ATTENDANCE_DONE, opener:true, payload:{...e.data.payload}}, "*");
-                                    window.close();
+                                    try {
+                                        window.opener && window.opener.postMessage({ type: constants.TODAYS_ATTENDANCE_DONE, opener:true, payload:{...e.data.payload}}, "*");
+                                        
+                                    } catch (error) {
+                                        console.error("JimmyError", error);
+                                    }
+                                    window.location.hash.includes("#auto_checkout_process") && window.close();
                                 }
                             }
                         }
@@ -103,7 +116,13 @@ function ConfigurationContextProvider({children}) {
                             jimmyaja.markAttendanceOnJimmyAja(constants.OUT, outRequestCallback);
                         }
                         break;
-                    case constants.SAVE_CURRENT_URL: 
+                    case constants.COMPLETE_CHECKIN:
+                        {
+                            console.log("popup::Starting process of COMPLETE_CHECKIN",e.data.payload)
+                            jimmyaja.markAttendanceOnJimmyAja(constants.IN, inRequestCallback);
+                        }
+                        break;
+                    case constants.CURRENT_URL_SAVED: 
                         {
                             jimmyaja.markAttendanceOnJimmyAja(e.data.payload.type, outRequestCallback ,true);
                         }
@@ -182,9 +201,11 @@ function ConfigurationContextProvider({children}) {
     const handleInOutClick = (type) => {
         if(type === "OUT")
         {
-            window.postMessage({type: constants.MARKING_CHECK_OUT_IN_PROGRESS}, "*")
+            window.postMessage({type: constants.MARKING_CHECK_OUT_IN_PROGRESS, payload:{process:{checkout:true}}}, "*")
+            return;
         }
-        jimmyaja.markAttendanceOnJimmyAja(type, outRequestCallback);
+        
+        window.postMessage({type: constants.MARKING_CHECK_OUT_IN_PROGRESS, payload:{process:{checkin:true}}}, "*")
     }
     const inRequestCallback = () => {
         console.log("requesting for atttendance marked sucess full")
@@ -192,7 +213,7 @@ function ConfigurationContextProvider({children}) {
     }
     const outRequestCallback = () => {
         window.postMessage({type: constants.MARKED_CHECK_OUT }, "*")
-      }
+    }
     return (
         <ConfigurationContext.Provider
             value={{...state, handleApplicationBtnClick, handleInOutClick}}

@@ -17,7 +17,6 @@ function bootstrap () {
 if(!window.location.href.includes("http://localhost"))
 bootstrap();
 
-
 window.addEventListener("message", function (e) {
     if(e.source != window) return;
     if(e.data.type){
@@ -30,7 +29,7 @@ window.addEventListener("message", function (e) {
                         message:"Welcome now you can communicate with chrome extension",
                         baseUrl: chrome.runtime.getURL("")
                     }
-                }, "*")    
+                }, "*");
                 chrome.runtime.sendMessage({ type: "ALREADY_IN" }, BackgroundManager.CheckAlreadyIn)
             }
             break;
@@ -40,7 +39,7 @@ window.addEventListener("message", function (e) {
             }
             break;   
             case "MARKING_CHECK_OUT_IN_PROGRESS":
-                chrome.runtime.sendMessage({ type: "MARKING_CHECK_OUT_IN_PROGRESS" }, BackgroundManager.CheckAlreadyIn)
+                chrome.runtime.sendMessage({ type: "MARKING_CHECK_OUT_IN_PROGRESS", payload:{...e.data.payload} }, BackgroundManager.CheckAlreadyIn)
                 break;
             case "MARKED_CHECK_OUT":
                 BackgroundManager.HandleMarkedCheckOut();
@@ -66,6 +65,16 @@ window.addEventListener("message", function (e) {
                     payload:{ ...e.data.payload }
                 }, BackgroundManager.HandleConfigResponse)
             }
+            break;
+            case "CONFIG.SET":
+            {
+                console.log("CONFIG.SET")
+                chrome.runtime.sendMessage({ 
+                    type: "CONFIG.SET",  
+                    payload:{ ...e.data.payload }
+                }, BackgroundManager.HandleConfigResponse)
+            }
+            break;
             default:
                 break;
         }
@@ -125,22 +134,38 @@ const BackgroundManager = {
     },
     HandleConfigResponse:function(response){
         console.log("response::", response)
-        window.postMessage({ type: "CONFIG.GET.SERVER", payload:{...response.payload}}, "*");
+        window.postMessage({ type: `${response.type}.SERVER`, payload:{...response.payload}}, "*");
     },
     CheckAlreadyIn : function(response) {
         console.log("content::checkAlreadyIn::", response, response.payload.isCheckedIn);
-        if(!response.payload.isCheckedIn && (!response.payload.process || !response.payload.process.checkout)){
-            console.log("not logged IN")
-            window.postMessage({ type: "MARK_ATTENDANCE" }, "*");
+        if(!response.payload.isCheckedIn && (!response.payload.process || (!response.payload.process.checkout && !response.payload.process.checkin))){
+            if(response.payload.userCredentials && response.payload.userCredentials.companyCode){
+                console.log("not logged IN")
+                window.postMessage({ type: "MARK_ATTENDANCE", payload:{...response.payload}}, "*");
+            }
         }
         else{
-            if(!response.payload.process || !response.payload.process.checkout)
+            if(!response.payload.process || (!response.payload.process.checkout && !response.payload.process.checkin))
             {
                 BackgroundManager.HandleMarkAttendanceRepsone(response);
             }
             else {
-                response.payload.process && response.payload.process.checkout && window.postMessage({ type: "COMPLETE_CHECKOUT" }, "*");
+                response.payload.process && (response.payload.process.checkout) && window.postMessage({ type: "COMPLETE_CHECKOUT" }, "*");
+                response.payload.process && (response.payload.process.checkin) && window.postMessage({ type: "COMPLETE_CHECKIN" }, "*");
             }
+        }
+    },
+    WelcomMessageResponse: function(response) {
+        if(!response.payload.isCheckedIn && (!response.payload.process || !response.payload.process.checkout)){
+            console.log("not logged IN")
+            window.postMessage({
+                type:"WELCOME_MESSAGE_RESPONSE",
+                payload:{
+                    ...response.payload,
+                    message:"Welcome now you can communicate with chrome extension",
+                    baseUrl: chrome.runtime.getURL("")
+                }
+            }, "*");
         }
     },
     HandleAttendanceMarkedSuccessfull: function() {
@@ -199,7 +224,13 @@ const HelperFunctions = {
     
     isThisInValidHour: function(){
         console.log("Intervals::current houre",this.getCurrentHour() );
-        return (this.getCurrentHour() < 9 || this.getCurrentHour() >= 23); //current houre is less than 9 and greator than or equals to 11 pm
+        const userCredentials = localStorage.getItem("userCredentials");
+        let startHour = 9;
+        if(userCredentials){
+            startHour = JSON.parse(JSON.parse(userCredentials)).startHour;
+        }
+
+        return (this.getCurrentHour() <= startHour || this.getCurrentHour() >= 23); //current houre is less than 9 and greator than or equals to 11 pm
     },
     getCurrentHour: function(){
         return moment().format("H");

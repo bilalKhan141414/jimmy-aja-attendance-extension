@@ -1,5 +1,4 @@
 import react from 'react';
-import logo from './logo.svg';
 import './App.scss';
 import {ConfigurationContext} from './context/ConfigurationContext'
 import LoginControlsPopup from './components/Popups/LoginControls/LoginControlsPopup';

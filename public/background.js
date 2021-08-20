@@ -146,6 +146,7 @@ const StateManager = {
             isCheckedIn: (StateManager.sotrageHasData() && StateManager.isJimmyAjaCheckedIN()) || Helpers.IsDayOff,
             isCheckedOut: (StateManager.sotrageHasData() && StateManager.isJimmyAjaCheckedOut()) || Helpers.IsDayOff,
             process: {...(StateManager.sotrageHasData() ? StateManager.State.jimmyAja.process : {})},
+            userCredentials:StateManager.sotrageHasData() && StateManager.jimmy.userCredentials
         }
     },
     get IsJimmyAjaCheckOutTime () {
@@ -268,6 +269,7 @@ const RequestManager = {
                 const state = StateManager.State;
                 state.jimmyAja.isCheckedIn = true;
                 state.jimmyAja.inDate = Helpers.getTodayDate(true);
+                state.jimmyAja.process.checkin = false;
                 console.log("check in ")
                 senderResponse({
                     type:request.type,
@@ -308,14 +310,16 @@ const RequestManager = {
             break;
             case "MARKING_CHECK_OUT_IN_PROGRESS":{
                 const state = StateManager.State;
-                state.jimmyAja.process.checkout= true;
+                state.jimmyAja.process = {
+                    ...request.payload.process
+                };
                 StateManager.State = state;
                 
                 senderResponse({
                     type:request.type,
                     payload : {
-                        isCheckedOut: false,
-                        isCheckedIn: state.jimmyAja.isCheckedIn,
+                        isCheckedOut: request.payload.process.checkout ? false : state.jimmyAja.isCheckedOut,
+                        isCheckedIn: request.payload.process.checkin ? false: state.jimmyAja.isCheckedIn,
                         process: {...state.jimmyAja.process}
                     }
                 })
@@ -360,9 +364,26 @@ const RequestManager = {
             case "CONFIG.GET":
             { 
                 senderResponse({
-                    type:request.type+".SERVER",
-                    payload : {...StateManager.State.userCredentials}
+                    type:request.type,
+                    payload : {...StateManager.State.jimmyAja.userCredentials}
                 })
+            }
+            break;
+            case "CONFIG.SET":
+            { 
+                const state = StateManager.State;
+                state.jimmyAja.userCredentials = {
+                    ...request.payload,
+                    startHoure: moment(request.payload.startTime, "HH:MM:SS").format("HH")
+                }
+                console.log("Config.set ")
+                senderResponse({
+                    type:request.type,
+                    payload : {
+                        ...request.payload
+                    }
+                });
+                StateManager.State = state;   
             }
             break;
             default:
