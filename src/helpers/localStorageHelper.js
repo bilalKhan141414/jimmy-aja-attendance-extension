@@ -7,7 +7,6 @@ export default {
             const parsedCreds = JSON.parse(userCredentials);
             return {
                 ...parsedCreds,
-                startHoure: moment(parsedCreds.startTime, "HH:MM:SS").format("HH"),
                 isValid:true
             };
         }

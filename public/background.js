@@ -374,13 +374,13 @@ const RequestManager = {
                 const state = StateManager.State;
                 state.jimmyAja.userCredentials = {
                     ...request.payload,
-                    startHoure: moment(request.payload.startTime, "HH:MM:SS").format("HH")
+                    startHoure: moment(request.payload.startTime, "hh:mm:ss").format("HH")
                 }
                 console.log("Config.set ")
                 senderResponse({
                     type:request.type,
                     payload : {
-                        ...request.payload
+                        ...state.jimmyAja.userCredentials
                     }
                 });
                 StateManager.State = state;   

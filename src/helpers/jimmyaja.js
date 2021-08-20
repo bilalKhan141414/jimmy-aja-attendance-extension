@@ -81,10 +81,13 @@ export default {
         this.checkAttendesMarkedSuccessfully();  
                 // this.setDataInStore();
     },
-    isThisInValidHour: function(){
-        console.log("current houre",this.getCurrentHour() );
-        const userCredentials = LocalStorageHelper.userCredentials;
-        return (this.getCurrentHour() <= (userCredentials.isValid ? +userCredentials.startHoure : 9) || this.getCurrentHour() >= 23); //current houre is less than 9 and greator than or equals to 11 pm
+    isThisInValidHour: function(userCredentials){
+        console.log("userCredentials::current houre before",this.getCurrentHour(),userCredentials );
+        if(!userCredentials){
+            userCredentials = LocalStorageHelper.userCredentials
+        }
+        console.log("userCredentials::current houre after",this.getCurrentHour(),this.getCurrentHour() <= (userCredentials.startHoure ? +userCredentials.startHoure : 9) || this.getCurrentHour() >= 23, userCredentials );
+        return (this.getCurrentHour() < (userCredentials.startHoure ? +userCredentials.startHoure : 9) || this.getCurrentHour() >= 23); //current houre is less than 9 and greator than or equals to 11 pm
     },
     getCurrentHour: function(){
         return moment().format("H");

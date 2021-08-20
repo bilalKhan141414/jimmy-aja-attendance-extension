@@ -8,10 +8,10 @@ import constants from './../../../constants';
 export default function JimmyAjaLogin() {
     const [openCard, setOpenCard] = useState(false)
     const [loginCredentials, setLoginCredentials] = useState({
-        companyCode:"",
+        companyCode:"OBOBS",
         email:"",
         password:"",
-        startTime:"",
+        startTime:"09:00:00",
     })
     const [operationProcess, setOperationProcess] = useState({
         isSaving:false,
@@ -20,9 +20,8 @@ export default function JimmyAjaLogin() {
     const [areLoginDetailsSaved, setAreLoginDetailsSaved] = useState(false)
     useEffect(() => {
         window.postMessage({type:contants.CONFIG.GET}, "*")
-        
         window.addEventListener("message", function (e) {
-            if(e.source != window) return;
+            if(e.source !== window) return;
             if(e.data.type){
                  switch (e.data.type) {
                     case constants.CONFIG.GET_SERVER:
@@ -35,10 +34,11 @@ export default function JimmyAjaLogin() {
                         }
                         break;
                     case constants.CONFIG.SET_SERVER:{
+                        localStorage.setItem("userCredentials", JSON.stringify({...e.data.payload}))
                         setOpenCard(false);
                         setTimeout(()=>{
+                            window.postMessage({type:constants.WELCOME_MESSAGE}, "*")
                             setAreLoginDetailsSaved(false);
-                            window.postMessage({ type: "MARK_ATTENDANCE", payload:{}}, "*");
                         }, 1000)
                         setOperationProcess(prevState => ({
                             ...prevState,
@@ -86,7 +86,7 @@ export default function JimmyAjaLogin() {
             type:constants.CONFIG.SET, 
             payload:{
                 ...loginCredentials,
-                startTime: !!loginCredentials.startTime || "9:00:00"
+                startTime: loginCredentials.startTime || "9:00:00"
             }
         }, "*")
     }
@@ -108,7 +108,7 @@ export default function JimmyAjaLogin() {
         
             areLoginDetailsSaved && 
             <div className="cardOverLay" onClick={handleCloseLoginPopup}>
-                <div className={`card ${openCard && "active"}`}>
+                <form className={`card ${openCard && "active"}`} onSubmit={(e)=> e.preventDefault()}>
                     <div className="leftSection">
                         <div className="formWraper">
                             <div className="logoContainer">
@@ -147,11 +147,12 @@ export default function JimmyAjaLogin() {
                                     <label>Password</label>
                                     <span className="line"></span>
                                 </div>
-                                <div className={`brise-input ${loginCredentials.startTime && "valid"}`}>
+                                <div className={`brise-input ${loginCredentials.startTime && "valid"} valid`}>
                                     <input 
-                                        type="text"
+                                        type="time"
                                         value={loginCredentials.startTime} 
-                                        name="startTime" 
+                                        name="startTime"
+                                        step="2" 
                                         onChange={handleChange}
                                     />
                                     <label>Start Time (optional)</label>
@@ -181,7 +182,14 @@ export default function JimmyAjaLogin() {
                             
                             <button 
                             onClick={handleSaveCredentials}
-                            disabled={!(!!loginCredentials.companyCode && !!loginCredentials.email && !!loginCredentials.password && validateEmail(loginCredentials.email))}
+                            disabled={
+                                !(
+                                    !!loginCredentials.companyCode && 
+                                    !!loginCredentials.email && 
+                                    !!loginCredentials.password && 
+                                    validateEmail(loginCredentials.email)
+                                )}
+                            type="submit"
                             >
                                 {getLoadingMessage()}
                             </button>
@@ -196,7 +204,7 @@ export default function JimmyAjaLogin() {
                             </p>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
     )
 }

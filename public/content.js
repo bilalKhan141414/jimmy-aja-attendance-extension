@@ -223,14 +223,13 @@ const BackgroundManager = {
 const HelperFunctions = {
     
     isThisInValidHour: function(){
-        console.log("Intervals::current houre",this.getCurrentHour() );
         const userCredentials = localStorage.getItem("userCredentials");
         let startHour = 9;
         if(userCredentials){
-            startHour = JSON.parse(JSON.parse(userCredentials)).startHour;
+            startHour = JSON.parse(userCredentials).startHoure;
         }
 
-        return (this.getCurrentHour() <= startHour || this.getCurrentHour() >= 23); //current houre is less than 9 and greator than or equals to 11 pm
+        return (this.getCurrentHour() < startHour || this.getCurrentHour() >= 23); //current houre is less than 9 and greator than or equals to 11 pm
     },
     getCurrentHour: function(){
         return moment().format("H");
