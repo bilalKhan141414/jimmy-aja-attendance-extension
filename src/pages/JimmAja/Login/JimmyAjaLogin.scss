@@ -1,0 +1,243 @@
+.cardOverLay{
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    background: #fff !important;
+    z-index: 9999999999 !important;
+}
+.card{
+    position: relative !important;
+    width: 300px !important;
+    // height: 400px !important;
+    background-color: #fff !important;
+    transform-style: preserve-3d !important;
+    transform:perspective(1000px) !important;
+    box-shadow: 10px 20px 40px #00000040 !important;  
+    transition: all 0.5s 0.5s ease !important; 
+    .rightSection{
+        position: absolute !important;
+        top:0 !important;
+        left:0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        background: #fafbfd !important;
+
+        .contentContainer{
+            width: 100% !important;
+            height: 100% !important;
+            padding: 0 35px !important;
+            display: flex !important;
+            align-items: center !important;
+            flex-direction: column !important;
+            margin-top: 70px !important;
+            button{
+                background: #17223b!important;
+                border: 1px solid #17223b!important;
+                display: inline-block !important;
+                font-weight: 400 !important;
+                margin-bottom: 20px !important;
+                color: #fff !important;
+                text-align: center !important;
+                vertical-align: middle !important;
+                -webkit-user-select: none !important;
+                -moz-user-select: none !important;
+                -ms-user-select: none !important;
+                user-select: none !important;
+                box-shadow: none!important;
+                font-size: 15px !important;
+                padding: 10px 20px !important;
+                height: 48px !important;
+                line-height: 1.5 !important;
+                border-radius: .25rem !important;
+                -webkit-transition: color .15s ease-in-out , background-color .15s ease-in-out , border-color .15s ease-in-out , -webkit-box-shadow .15s ease-in-out !important;
+                transition: color .15s ease-in-out !important;
+            }
+
+            button:not(:disabled), 
+            [type="button"]:not(:disabled), 
+            [type="reset"]:not(:disabled), 
+            [type="submit"]:not(:disabled) {
+                cursor: pointer !important;
+                
+            }
+            button:disabled{
+                opacity: 0.5;
+                cursor: not-allowed !important;
+            }
+
+            p {            
+                font-size: 12px !important;
+                text-align: center !important;
+                &.copyright{
+                    font-size: 10px !important;
+                    position: absolute !important;
+                    bottom: 0 !important;
+                    padding: 0 20px !important;
+                    color: #6b6b6b !important;
+                    font-weight: 500 !important;
+                }
+            }
+        }
+    }
+    
+    .leftSection{
+        position: relative !important;
+        width:100% !important;
+        height: 100% !important;
+        z-index: 1 !important;
+        background-color: #fff !important;
+        transform-origin: left !important;
+        transition: 1s !important;
+        transform-style: preserve-3d !important;
+              
+        .formWraper{
+            width: 100% !important;
+            height: 100% !important;
+            background-color: #fff !important;
+            transform: rotateY(-180deg) !important;
+            .logoContainer{
+                height: 120px !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                flex-direction: column !important;
+                img{
+                    width: 50% !important;
+                    margin-right: -38px !important;
+                }
+            } 
+            .wrap-line {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                justify-content: space-between !important;
+                margin: 0 20px !important;
+                padding: 0px 0 40px 0;
+                .brise-input {
+                    width: 300px !important;
+                    position: relative !important;
+                    margin: 5px !important;
+                    overflow: hidden !important;
+                    padding-top: 15px !important;
+                    &.valid{
+                        label  {
+                            top: 0px ;
+                            transform: scale(0.94) translateX(-2px) ;
+                            color: #4485c5 ;
+                            font-size: 13px ;
+                        }
+                    }
+                    input {
+                        width: 100%;
+                        padding: 10px;
+                        border: none;
+                        outline: none;
+                        border-bottom: 1px solid #999;
+                        box-sizing: border-box;
+                        font-size: 16px;
+                        position: relative;
+                        z-index: 5;
+                        background: none;
+                        box-shadow: none;
+                        outline: unset;
+                        margin:unset;
+                        border-radius: unset;
+                    }
+                    
+                    
+                    label {
+                        position: absolute ;
+                        left: 10px ;
+                        top: 45% ;
+                        transition: ease-out .15s ;
+                        color: #999 ;
+                    }
+                    .line {
+                        position: absolute !important;
+                        left: 0 !important;
+                        bottom: 0 !important;
+                        width: 100% !important;
+                        height: 2px !important;
+                        background: #4485c5 !important;
+                        left: -999px !important;
+                        transition: .25s !important;
+                        opacity: 0 !important;
+                        z-index: 6 !important;
+                        margin: unset !important;
+                    }
+                }
+                
+                input:focus ~ label  {
+                    top: 0px ;
+                    transform: scale(0.94) translateX(-2px) ;
+                    color: #4485c5 ;
+                    font-size: 13px ;
+                }
+                input:focus ~ .line {
+                    left: 0;
+                    opacity: 1;
+                }
+            }
+        }
+        
+        .leftSectionInfo {
+            position: absolute !important;
+            top: 0 !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 100% !important;
+            height: 100% !important;
+            text-align: center !important;
+            .infoHeading{
+                font-size: 30px !important;
+                font-weight: bold !important;
+                margin: 30px 0 !important;
+            } 
+            .logoContainer{
+                height: 120px !important;
+                padding: 20px 20px 0 20px !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                flex-direction: column !important;
+                img{
+                    width: 50% !important;
+                    margin-right: -25px !important;
+                }
+            } 
+            p.copyright{
+                font-size: 10px !important;
+                position: absolute !important;
+                bottom: 0 !important;
+                padding: 0 20px !important;
+                color: #6b6b6b !important;
+                font-weight: 500 !important;
+            }
+        }
+    }
+    &.active 
+    {    
+        box-shadow: 10px 20px 40px #0000001f !important;  
+        transform: perspective(1000px) translateX(150px) !important;
+
+        .leftSection{
+            transform: rotateY(-180deg) !important;
+            .formWraper{
+                box-shadow: -27px 5px 40px #00000017 !important;
+            }
+            .leftSectionInfo{
+                display: none !important;
+            }
+        }
+    }
+}
+
+/* End Inputs */
+

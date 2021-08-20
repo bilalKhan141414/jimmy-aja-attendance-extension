@@ -21,7 +21,7 @@ export default function OperationsPopup({
                         <h1 className="m-0 p-0">{header}</h1>
                     }
                 </div>
-                <div className="extensionModalBody flex items-center justify-center">
+                <div className="extensionModalBody">
                    {body}
                 </div>
                 <div className="extensionModalFooter">
